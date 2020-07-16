@@ -10,4 +10,8 @@ class ReactionSpecification {
 
     }
 
+    public String toString(){
+        return "[" + reactionType + " = " + reactionNodes + "]";
+    }
+
 }

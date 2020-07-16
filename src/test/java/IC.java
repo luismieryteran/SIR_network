@@ -1,10 +1,8 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 class IC {
 
-    Map<Integer, Object> state = new HashMap<>();
+    SortedMap<Integer, Compartments> state = new TreeMap<>();
 
     IC(Integer N){
         Random random = new Random(1234567890);

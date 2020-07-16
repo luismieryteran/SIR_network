@@ -5,6 +5,7 @@ library(ggplot2)
 library(ggthemes)
 library(ggnetwork)
 library(network)
+library(deSolve)
 library(igraph)
 library(GGally)}
 
@@ -79,7 +80,7 @@ InfectionNbrs %>%
 
 
 SimSummary.long <- read_csv("../output/summarizedDynamicState.csv") %>%
-  pivot_longer(-t, names_to = "State", values_to = "Count")
+  pivot_longer(-c(t, iter), names_to = "State", values_to = "Count")
 
 SimSummary.long %>%
   ggplot() +
@@ -208,6 +209,57 @@ animate(p, nframes = nframes,
 
 
 # animate(p, renderer = ffmpeg_renderer("../output/simulation.mpg"))
+
+
+
+
+
+
+
+
+# ---------------------------------------
+#     Solving ODEs for SIR
+# ---------------------------------------
+N <- 5000
+gamma <- 0.2
+R0 <- 2.5
+
+parameters <- c(beta = R0 * gamma,
+                gamma = gamma, 
+                N = N)
+state <- c(S = N - 2, I = 2, R = 0)
+
+SIR <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)), {
+    dS <- - beta / N * S * I
+    dI <- beta / N * S * I - gamma * I
+    dR <- gamma * I
+    
+    list(c(dS, dI, dR))
+  })
+}
+
+t <- seq(0, 60, by = 0.01)
+
+sim <- ode(y = state, times = t, func = SIR, parms = parameters) %>%
+  as_tibble() %>% pivot_longer(-time, names_to = "compartment")
+
+sim %>%
+  ggplot() +
+  geom_line(aes(x = time, y = value, group = compartment, color = factor(compartment, levels = c("S", "I", "R"))), size = 1) +
+  scale_color_discrete(name = "State") +
+  coord_cartesian(xlim = c(0, 60), y = c(0, N))
+
+
+
+SimSummary.long %>%
+  ggplot() +
+  geom_line(aes(x = t, y = Count, group = interaction(iter, State), 
+                color = factor(State, levels = c("S", "I", "R"))), alpha = 0.2) +
+  geom_line(data = sim, 
+            aes(x = time, y = value, group = compartment, color = factor(compartment, levels = c("S", "I", "R"))), size = 1) +
+  scale_color_discrete(name = "State") +
+  coord_cartesian(xlim = c(0, 60), y = c(0, N))
 
 
 

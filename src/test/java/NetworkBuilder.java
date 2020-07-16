@@ -1,8 +1,6 @@
 import javafx.util.Pair;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 class NetworkBuilder {
@@ -10,7 +8,7 @@ class NetworkBuilder {
     Map<Integer, List<Integer>> networkNeighbors = new HashMap<>();
 
 
-    void buildNetwork (int N, double p) throws IOException {
+    void buildNetwork (int N, double p) {
         Random random = new Random(1234567890);
 
         // Initializing network with no contacts
@@ -51,17 +49,14 @@ class NetworkBuilder {
             }
         }
         // Printing network to file
-        printNetwork(network);
+//        printNetwork(network);
     }
 
-    void printNetwork(List<Pair<Integer, Integer>> network) throws IOException {
-
-        Path currentRelativePath = Paths.get("");
+    void printNetwork(String outputPath, List<Pair<Integer, Integer>> network) throws IOException {
 
         // Output file
         try (FileWriter writer =
-                     new FileWriter(currentRelativePath.toAbsolutePath() +
-                             "/src/test/output/network.csv")) {
+                     new FileWriter(outputPath + "network.csv")) {
 
             writer.append("Node1, Node2 \n");
             for (Pair linkedNodes : network) {

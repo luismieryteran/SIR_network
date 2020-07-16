@@ -1,52 +1,76 @@
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class Simulation {
-    Path currentRelativePath = Paths.get("");
 
-    private Random random = new Random(1234567890);
+class Simulation {
+    private Integer randomSeed = 1234567890;
+    private Random random = new Random(randomSeed);
+    private Double simulationStartTime;
+
+    Simulation(Double time){
+        this.simulationStartTime = time;
+    }
+
+    private Map<Compartments, Long> numberOfNodesByCompartment(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
+      return dynamicState.getValue()
+              .values()
+              .stream()
+              .collect(Collectors.groupingBy(
+                      Function.identity(),
+                      Collectors.counting()));
+    }
 
     private Double nextReactionTime(Double lambda){
-        return  Math.log(1 - random.nextDouble()) / ( - lambda );
+        if ( lambda == 0 ) {
+            return Double.POSITIVE_INFINITY;
+        } else {
+            return Math.log(1 - random.nextDouble()) / ( - lambda );
+        }
     }
 
     private Integer nextReaction(Map<Integer, Double> reactionRates, Double sumReactionRates){
-        Integer nextReaction = 0;
-        Double runningSumW = 0.0;
-        Double rnd = random.nextDouble();
 
-        while ( runningSumW < rnd ){
-            runningSumW += reactionRates.get(nextReaction + 1) / sumReactionRates;
-            nextReaction++;
+        Integer nextReaction;
+        if ( sumReactionRates != 0 ) {
+            nextReaction = 0;
+            Double runningSumW = 0.0;
+            Double rnd = random.nextDouble();
+
+            while (runningSumW < rnd) {
+                runningSumW += reactionRates.get(nextReaction + 1) / sumReactionRates;
+                nextReaction++;
+            }
+        } else {
+            nextReaction = null;
         }
 
         return nextReaction;
     }
 
 
-    private void reactionStep(NavigableMap<Double, Map<Integer, Object>> dynamicState,
+    private void reactionStep(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
                               NavigableMap<Double, ReactionSpecification> reactionHistory,
                               Map<Integer, List<Integer>> networkNeighbors, Parameters parameters){
 
         // Reactions at current time
-        Reactions reactions = new Reactions(dynamicState.lastEntry().getValue(), networkNeighbors, parameters);
+        Reactions reactions = new Reactions(dynamicState.getValue(), networkNeighbors, parameters);
 
         if ( reactions.sumReactionRates != 0.0 ) {
             // When and which reaction occurs
             Double nextReactionTime =
-                    dynamicState.lastEntry().getKey() +
+                    dynamicState.getKey() +
                             nextReactionTime(reactions.sumReactionRates);
 
             Integer nextReaction = nextReaction(reactions.reactionRates, reactions.sumReactionRates);
 
             // Modifying oldState into newState because of reaction
-            Map<Integer, Object> newState = new HashMap<>();
-            newState.putAll(dynamicState.lastEntry().getValue());
+            SortedMap<Integer, Compartments> newState = new TreeMap<>();
+            newState.putAll(dynamicState.getValue());
 
             if (reactions.reactionType.get(nextReaction) == ReactionType.Recovery) {
                 newState.put(reactions.reactionNodes.get(nextReaction).get(0), Compartments.R);
@@ -58,157 +82,219 @@ class Simulation {
             reactionHistory.put(nextReactionTime,
                     new ReactionSpecification(reactions.reactionType.get(nextReaction),
                             reactions.reactionNodes.get(nextReaction)));
-            dynamicState.put(nextReactionTime, newState);
+            dynamicState.setLeft(nextReactionTime);
+            dynamicState.setRight(newState);
         }
     }
 
-
-    void reactionStepping(NavigableMap<Double, Map<Integer, Object>> dynamicState,
+    void reactionStepping(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
                           NavigableMap<Double, ReactionSpecification> reactionHistory,
                           Map<Integer, List<Integer>> networkNeighbors, Parameters parameters) {
 
-        Integer dynamicStateSize = 0;
-        while ( dynamicStateSize != dynamicState.size() ) {
-            dynamicStateSize = dynamicState.size();
+        // Printing IC
+        printDynamicState(experiment, dynamicState);
+        printSummarizedDynamicState(experiment, dynamicState);
 
+        Map<Compartments, Long> nodeComposition = numberOfNodesByCompartment(dynamicState);
+
+        while ( nodeComposition.get(Compartments.I) != null ) {
+//        for (int i = 1; i <= 10; i++){
+            // Single step
             reactionStep(dynamicState, reactionHistory, networkNeighbors, parameters);
+
+            // new node composition
+            nodeComposition = numberOfNodesByCompartment(dynamicState);
+
+            // Printing new state to files
+            printDynamicState(experiment, dynamicState);
+            printSummarizedDynamicState(experiment, dynamicState);
         }
     }
 
 
-    void printDynamicState(NavigableMap<Double, Map<Integer, Object>> dynamicState){
-
-        // Output file
-        try (FileWriter writer =
-                     new FileWriter(currentRelativePath.toAbsolutePath() +
-                             "/src/test/output/dynamicState.csv")) {
+    private FileWriter writerSummarizedDynamicState;
+    private FileWriter writerDynamicState;
+    private FileWriter writerDynamicStateMinimal;
+    private FileWriter writerReactionHistory;
+    void openOutputFiles(String outputPath, Integer networkSize) {
+        try {
+            //------------- Summarized Dynamic State
+            writerSummarizedDynamicState =
+                    new FileWriter(outputPath + "summarizedDynamicState.csv");
 
             // File headers
-            writer.append("t, ");
-            Set<Integer> nodes = dynamicState.firstEntry().getValue().keySet();
+            writerSummarizedDynamicState.append("iter, t, ");
+            for (Compartments compartments : Compartments.values()) {
+                writerSummarizedDynamicState.append(String.valueOf(compartments));
 
-            for (Iterator<Integer> it = nodes.iterator(); it.hasNext(); ) {
-                writer.append(String.valueOf(it.next()));
-
-                if ( it.hasNext() ) {
-                    writer.append(", ");
+                if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
+                    writerSummarizedDynamicState.append("\n");
                 } else {
-                    writer.append("\n");
+                    writerSummarizedDynamicState.append(", ");
                 }
             }
 
-            // Writing to file
-            for (Map.Entry<Double, Map<Integer, Object>> entry : dynamicState.entrySet()) {
-
-                writer.append(String.valueOf(entry.getKey()));
-                writer.append(", ");
-                for (Iterator<Integer> it = nodes.iterator(); it.hasNext(); ){
-                    writer.append(String.valueOf(entry.getValue().get(it.next())));
-
-                    if ( it.hasNext() ) {
-                        writer.append(", ");
-                    } else {
-                        writer.append("\n");
-                    }
-                }
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    void printSummarizedDynamicState(NavigableMap<Double, Map<Integer, Object>> dynamicState) {
-        NavigableMap<Double, Map<Object, Long>> summarizedDynamicState = new TreeMap<>();
-
-        for (Double t : dynamicState.keySet()){
-            Map<Object, Long> dynamicStateAtTimeToPrint = new LinkedHashMap<>();
-            Map<Object, Long> dynamicStateAtTime =
-                    dynamicState.get(t)
-                            .values()
-                            .stream()
-                            .collect(Collectors.groupingBy(
-                                    Function.identity(),
-                                    Collectors.counting()));
-
-            for (Object state : Compartments.values()){
-                if ( dynamicStateAtTime.get(state) == null ){
-                    dynamicStateAtTimeToPrint.
-                            put(state, (long) 0);
-                } else {
-                    dynamicStateAtTimeToPrint.
-                            put(state, dynamicStateAtTime.get(state));
-                }
-            }
-
-            summarizedDynamicState.put(t, dynamicStateAtTimeToPrint);
-        }
-
-
-        // Output file
-        try (FileWriter writer =
-                     new FileWriter(currentRelativePath.toAbsolutePath() +
-                             "/src/test/output/summarizedDynamicState.csv")) {
+            //------------- Detailed Dynamic State
+            writerDynamicState =
+                    new FileWriter(outputPath + "dynamicState.csv");
 
             // File headers
-            writer.append("t, ");
-            Set<Object> states = summarizedDynamicState.firstEntry().getValue().keySet();
+            writerDynamicState.append("iter, t, ");
+            for (Integer node = 1; node <= networkSize; node++) {
+                writerDynamicState.append(node.toString());
 
-            for (Iterator<Object> it = states.iterator(); it.hasNext(); ) {
-                writer.append(String.valueOf(it.next()));
-
-                if ( it.hasNext() ) {
-                    writer.append(", ");
+                if ( node.equals(networkSize) ) {
+                    writerDynamicState.append("\n");
                 } else {
-                    writer.append("\n");
+                    writerDynamicState.append(", ");
                 }
             }
 
-            // Writing to file
-            for (Map.Entry<Double, Map<Object, Long>> entry : summarizedDynamicState.entrySet()) {
+            //------------- Detailed Dynamic State Minimal
+            writerDynamicStateMinimal =
+                    new FileWriter(outputPath + "dynamicStateMinimal.csv");
 
-                writer.append(String.valueOf(entry.getKey()));
-                writer.append(", ");
-                for (Iterator<Object> it = states.iterator(); it.hasNext(); ){
-                    writer.append(String.valueOf(entry.getValue().get(it.next())));
+            // File headers
+            writerDynamicStateMinimal.append("iter, t, node, compartment\n");
 
-                    if ( it.hasNext() ) {
-                        writer.append(", ");
-                    } else {
-                        writer.append("\n");
-                    }
-                }
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    void printReactionHistory(Map<Double, ReactionSpecification> reactionHistory){
-
-        // Output file
-        try (FileWriter writer =
-                     new FileWriter(currentRelativePath.toAbsolutePath() +
-                             "/src/test/output/reactionHistory.csv")) {
-
+            //------------- Reaction History
+            writerReactionHistory =
+                    new FileWriter(outputPath + "reactionHistory.csv");
             // File header
-            writer.append("t, ReactionType, ReactionNodes\n");
+            writerReactionHistory.append("iter, t, ReactionType, ReactionNodes\n");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void closeOutputFiles(){
+        try {
+            writerSummarizedDynamicState.close();
+            writerDynamicState.close();
+            writerDynamicStateMinimal.close();
+            writerReactionHistory.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void printDynamicState(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
+        // Output file
+        try  {
+            // Writing to file
+            writerDynamicState.append(experiment.toString());
+            writerDynamicState.append(", ");
+            writerDynamicState.append(String.valueOf(dynamicState.getKey()));
+            writerDynamicState.append(", ");
+
+            for (Iterator<Integer> it = dynamicState.getValue().keySet().iterator(); it.hasNext(); ) {
+                writerDynamicState.append(String.valueOf(dynamicState.getValue().get(it.next())));
+
+                if ( it.hasNext() ) {
+                    writerDynamicState.append(", ");
+                } else {
+                    writerDynamicState.append("\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void printSummarizedDynamicState(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState) {
+        Map<Compartments, Long> numbersByCompartment =
+                dynamicState.getValue()
+                        .values()
+                        .stream()
+                        .collect(Collectors.groupingBy(
+                                Function.identity(),
+                                Collectors.counting()));
+
+        for (Compartments state : Compartments.values()){
+            numbersByCompartment.putIfAbsent(state, (long) 0);
+        }
+
+        // Output file
+        try {
+            // Writing to file
+            writerSummarizedDynamicState.append(experiment.toString());
+            writerSummarizedDynamicState.append(", ");
+            writerSummarizedDynamicState.append(String.valueOf(dynamicState.getKey()));
+            writerSummarizedDynamicState.append(", ");
+
+            for ( Compartments compartments : Compartments.values() ){
+                    writerSummarizedDynamicState.append(String.valueOf(numbersByCompartment.get(compartments)));
+
+                    if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
+                        writerSummarizedDynamicState.append("\n");
+                    } else {
+                        writerSummarizedDynamicState.append(", ");
+                    }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void printDynamicStateMinimal(Integer experiment,
+                                  SortedMap<Integer, Compartments> initialState,
+                                  NavigableMap<Double, ReactionSpecification> reactionHistory){
+
+        // Output file
+        try {
+            // Initial state
+            for (Map.Entry<Integer, Compartments> nodeState : initialState.entrySet()) {
+                writerDynamicStateMinimal.append(experiment.toString());
+                writerDynamicStateMinimal.append(", ");
+                writerDynamicStateMinimal.append(simulationStartTime.toString());
+                writerDynamicStateMinimal.append(", ");
+                writerDynamicStateMinimal.append(nodeState.getKey().toString());
+                writerDynamicStateMinimal.append(", ");
+                writerDynamicStateMinimal.append(nodeState.getValue().toString());
+                writerDynamicStateMinimal.append("\n");
+            }
 
             // Writing to file
             for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
-
-                writer.append(entry.getKey().toString());
-                writer.append(", ");
-                writer.append(entry.getValue().reactionType.toString());
-                writer.append(", ");
-                writer.append(entry.getValue().reactionNodes.toString().replace(",", ""));
-                writer.append("\n");
-
+                writerDynamicStateMinimal.append(experiment.toString());
+                writerDynamicStateMinimal.append(", ");
+                writerDynamicStateMinimal.append(entry.getKey().toString());
+                writerDynamicStateMinimal.append(", ");
+                if (entry.getValue().reactionType == ReactionType.Infection) {
+                    writerDynamicStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
+                    writerDynamicStateMinimal.append(", ");
+                    writerDynamicStateMinimal.append(Compartments.I.toString());
+                } else if (entry.getValue().reactionType == ReactionType.Recovery) {
+                    writerDynamicStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
+                    writerDynamicStateMinimal.append(", ");
+                    writerDynamicStateMinimal.append(Compartments.R.toString());
+                }
+                writerDynamicStateMinimal.append("\n");
             }
-            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void printReactionHistory(Integer experiment, Map<Double, ReactionSpecification> reactionHistory){
+
+        // Output file
+        try {
+            // Writing to file
+            for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
+                writerReactionHistory.append(experiment.toString());
+                writerReactionHistory.append(", ");
+                writerReactionHistory.append(entry.getKey().toString());
+                writerReactionHistory.append(", ");
+                writerReactionHistory.append(entry.getValue().reactionType.toString());
+                writerReactionHistory.append(", ");
+                writerReactionHistory.append(entry.getValue().reactionNodes.toString().replace(",", ""));
+                writerReactionHistory.append("\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
