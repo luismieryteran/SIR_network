@@ -1,10 +1,14 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class Simulation {
+    Path currentRelativePath = Paths.get("");
+
     private Random random = new Random(1234567890);
 
     private Double nextReactionTime(Double lambda){
@@ -76,8 +80,8 @@ class Simulation {
 
         // Output file
         try (FileWriter writer =
-                     new FileWriter("/Users/luis/Dropbox/Documents/Learning/Java/SIRNetwork_exp/src/" +
-                             "test/output/dynamicState.csv")) {
+                     new FileWriter(currentRelativePath.toAbsolutePath() +
+                             "/src/test/output/dynamicState.csv")) {
 
             // File headers
             writer.append("t, ");
@@ -144,8 +148,8 @@ class Simulation {
 
         // Output file
         try (FileWriter writer =
-                     new FileWriter("/Users/luis/Dropbox/Documents/Learning/Java/SIRNetwork_exp/src/" +
-                             "test/output/summarizedDynamicState.csv")) {
+                     new FileWriter(currentRelativePath.toAbsolutePath() +
+                             "/src/test/output/summarizedDynamicState.csv")) {
 
             // File headers
             writer.append("t, ");
@@ -187,8 +191,8 @@ class Simulation {
 
         // Output file
         try (FileWriter writer =
-                     new FileWriter("/Users/luis/Dropbox/Documents/Learning/Java/SIRNetwork_exp/src/" +
-                             "test/output/reactionHistory.csv")) {
+                     new FileWriter(currentRelativePath.toAbsolutePath() +
+                             "/src/test/output/reactionHistory.csv")) {
 
             // File header
             writer.append("t, ReactionType, ReactionNodes\n");

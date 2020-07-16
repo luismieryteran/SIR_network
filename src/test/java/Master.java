@@ -32,11 +32,11 @@ public class Master {
         dynamicState.put(t0, ic.state);     // setting ic
         NavigableMap<Double, ReactionSpecification> reactionHistory = new TreeMap<>();   // state of network in time
 
-//        Simulation simulation = new Simulation();
-//        simulation.reactionStepping(dynamicState, reactionHistory, networkNeighbors, parameters);
-//        simulation.printDynamicState(dynamicState);
-//        simulation.printSummarizedDynamicState(dynamicState);
-//        simulation.printReactionHistory(reactionHistory);
+        Simulation simulation = new Simulation();
+        simulation.reactionStepping(dynamicState, reactionHistory, networkNeighbors, parameters);
+        simulation.printDynamicState(dynamicState);
+        simulation.printSummarizedDynamicState(dynamicState);
+        simulation.printReactionHistory(reactionHistory);
 
     }
 }
