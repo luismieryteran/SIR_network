@@ -32,7 +32,8 @@ public class Master {
 
         // Simulation
         Double t0 = 0.0;   // initial time
-        Simulation simulation = new Simulation(t0);
+        Simulation simulation = new Simulation(t0, parameters);
+        simulation.seedRNG();
         simulation.openOutputFiles(simParameters.outputPath, parameters.N);
 
         for (Iterator<Integer> experiment =
@@ -47,6 +48,9 @@ public class Master {
 
             // state of network in time
             MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState = new MutablePair(t0, ic.state);
+
+            // Sim setup
+            simulation.simulationSetUp(dynamicState);
 
             // Simulation
             simulation.reactionStepping(exp, dynamicState,

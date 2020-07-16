@@ -21,13 +21,6 @@ class Reactions {
                         reactionNodes.put(reactionNodes.size() + 1, Arrays.asList(sourceNode.getKey(), contactNode));
                     }
                 }
-
-                // Contribution from recovery
-                reactionRates.put(reactionRates.size() + 1, parameters.gamma);
-                sumReactionRates += reactionRates.get(reactionRates.size());
-
-                reactionType.put(reactionType.size() + 1, ReactionType.Recovery);
-                reactionNodes.put(reactionNodes.size() + 1, Arrays.asList(sourceNode.getKey()));
             }
         }
     }

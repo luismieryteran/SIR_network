@@ -1,4 +1,5 @@
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.math3.distribution.GammaDistribution;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,11 +10,47 @@ import java.util.stream.Collectors;
 
 class Simulation {
     private Integer randomSeed = 1234567890;
-    private Random random = new Random(randomSeed);
+    private Random random;
+    private GammaDistribution gammaDistribution;
+
     private Double simulationStartTime;
 
-    Simulation(Double time){
+    private NavigableMap<Double, ReactionSpecification> reactionsToCome = new TreeMap<>();   // list of potential reactions to come
+    private Map<Integer, Double> recoveryTimesByNode = new HashMap<>();   // Future recovery Times by node
+
+
+    Simulation(Double time, Parameters parameters){
         this.simulationStartTime = time;
+
+        this.gammaDistribution  = new GammaDistribution(parameters.recov_scale, parameters.recov_shape);
+
+    }
+
+    void seedRNG(){
+        this.gammaDistribution.reseedRandomGenerator(randomSeed);
+        this.random = new Random(randomSeed);
+    }
+
+    private Double recoveryTime() {
+        return gammaDistribution.sample();
+    }
+
+    void simulationSetUp(MutablePair<Double, SortedMap<Integer, Compartments>> initialState){
+        Map<Integer, Compartments> ic = initialState.getValue();
+
+        recoveryTimesByNode.clear();
+        reactionsToCome.clear();
+
+        // Adding recovery times to initially infected nodes
+        for (Integer node : ic.keySet()){
+            if (ic.get(node) == Compartments.I){
+                Double recoveryTime = recoveryTime();
+                recoveryTimesByNode.put(node, simulationStartTime + recoveryTime);
+
+                reactionsToCome.put(recoveryTime,
+                        new ReactionSpecification(ReactionType.Recovery, Arrays.asList(node)));
+            }
+        }
     }
 
     private Map<Compartments, Long> numberOfNodesByCompartment(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
@@ -25,7 +62,7 @@ class Simulation {
                       Collectors.counting()));
     }
 
-    private Double nextReactionTime(Double lambda){
+    private Double nextInfectionTime(Double lambda){
         if ( lambda == 0 ) {
             return Double.POSITIVE_INFINITY;
         } else {
@@ -33,25 +70,24 @@ class Simulation {
         }
     }
 
-    private Integer nextReaction(Map<Integer, Double> reactionRates, Double sumReactionRates){
+    private Integer nextInfection(Map<Integer, Double> infectionRates, Double sumInfectionRates){
 
-        Integer nextReaction;
-        if ( sumReactionRates != 0 ) {
-            nextReaction = 0;
+        Integer nextInfectionReaction;
+        if ( sumInfectionRates != 0 ) {
+            nextInfectionReaction = 0;
             Double runningSumW = 0.0;
             Double rnd = random.nextDouble();
 
             while (runningSumW < rnd) {
-                runningSumW += reactionRates.get(nextReaction + 1) / sumReactionRates;
-                nextReaction++;
+                runningSumW += infectionRates.get(nextInfectionReaction + 1) / sumInfectionRates;
+                nextInfectionReaction++;
             }
         } else {
-            nextReaction = null;
+            nextInfectionReaction = null;
         }
 
-        return nextReaction;
+        return nextInfectionReaction;
     }
-
 
     private void reactionStep(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
                               NavigableMap<Double, ReactionSpecification> reactionHistory,
@@ -60,30 +96,62 @@ class Simulation {
         // Reactions at current time
         Reactions reactions = new Reactions(dynamicState.getValue(), networkNeighbors, parameters);
 
-        if ( reactions.sumReactionRates != 0.0 ) {
-            // When and which reaction occurs
-            Double nextReactionTime =
-                    dynamicState.getKey() +
-                            nextReactionTime(reactions.sumReactionRates);
+        Double currentTime = dynamicState.getKey();
+        Double nextReactionTime;
+        Integer nextReaction;
 
-            Integer nextReaction = nextReaction(reactions.reactionRates, reactions.sumReactionRates);
+        // Potential next infection
+        nextReactionTime = currentTime + nextInfectionTime(reactions.sumReactionRates);
+        nextReaction = nextInfection(reactions.reactionRates, reactions.sumReactionRates);
 
-            // Modifying oldState into newState because of reaction
-            SortedMap<Integer, Compartments> newState = new TreeMap<>();
-            newState.putAll(dynamicState.getValue());
+        if ( reactions.sumReactionRates != 0.0 | reactionsToCome.size() > 0) {
 
-            if (reactions.reactionType.get(nextReaction) == ReactionType.Recovery) {
-                newState.put(reactions.reactionNodes.get(nextReaction).get(0), Compartments.R);
+            if (nextReactionTime < reactionsToCome.firstEntry().getKey()) {  // New infection happens
 
-            } else if (reactions.reactionType.get(nextReaction) == ReactionType.Infection) {
-                newState.put(reactions.reactionNodes.get(nextReaction).get(1), Compartments.I);
+                Integer targetNode = reactions.reactionNodes.get(nextReaction).get(1);
+
+                // Modifying oldState into newState because of reaction
+                SortedMap<Integer, Compartments> newState = new TreeMap<>();
+                newState.putAll(dynamicState.getValue());
+                newState.put(targetNode, Compartments.I);
+
+                // Assigning Recovery of just-infected node
+                recoveryTimesByNode.put(targetNode, nextReactionTime +
+                        recoveryTime());
+                reactionsToCome.put(recoveryTimesByNode.get(targetNode),
+                        new ReactionSpecification(ReactionType.Recovery, Arrays.asList(targetNode)));
+
+
+                // Updating reaction to History and state
+                reactionHistory.put(nextReactionTime,
+                        new ReactionSpecification(reactions.reactionType.get(nextReaction),
+                                reactions.reactionNodes.get(nextReaction)));
+
+                // Updating state
+                dynamicState.setLeft(nextReactionTime);
+                dynamicState.setRight(newState);
+
+            } else {    // One Recovery happens before new infection
+
+                Double recoveryTime = reactionsToCome.firstEntry().getKey();
+                Integer recoveringNode = reactionsToCome.firstEntry().getValue().reactionNodes.get(0);
+                reactionsToCome.remove(recoveryTime);
+
+                // Modifying oldState into newState because of reaction
+                SortedMap<Integer, Compartments> newState = new TreeMap<>();
+                newState.putAll(dynamicState.getValue());
+                newState.put(recoveringNode, Compartments.R);
+
+                // Adding reaction to History and updating state
+                reactionHistory.put(recoveryTime,
+                        new ReactionSpecification(ReactionType.Recovery,
+                                Arrays.asList(recoveringNode)));
+
+                // Updating state
+                dynamicState.setLeft(recoveryTime);
+                dynamicState.setRight(newState);
+
             }
-
-            reactionHistory.put(nextReactionTime,
-                    new ReactionSpecification(reactions.reactionType.get(nextReaction),
-                            reactions.reactionNodes.get(nextReaction)));
-            dynamicState.setLeft(nextReactionTime);
-            dynamicState.setRight(newState);
         }
     }
 
@@ -204,18 +272,13 @@ class Simulation {
     }
 
 
-    private void printSummarizedDynamicState(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState) {
-        Map<Compartments, Long> numbersByCompartment =
-                dynamicState.getValue()
-                        .values()
-                        .stream()
-                        .collect(Collectors.groupingBy(
-                                Function.identity(),
-                                Collectors.counting()));
+    private void printSummarizedDynamicState(Integer experiment,
+                                             MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState) {
 
-        for (Compartments state : Compartments.values()){
-            numbersByCompartment.putIfAbsent(state, (long) 0);
-        }
+        // Counting number of nodes in each compartment
+        Map<Compartments, Long> numbersByCompartment = numberOfNodesByCompartment(dynamicState);
+        Arrays.stream(Compartments.values())
+                .forEach(c -> numbersByCompartment.putIfAbsent(c, (long) 0));
 
         // Output file
         try {
@@ -243,7 +306,6 @@ class Simulation {
     void printDynamicStateMinimal(Integer experiment,
                                   SortedMap<Integer, Compartments> initialState,
                                   NavigableMap<Double, ReactionSpecification> reactionHistory){
-
         // Output file
         try {
             // Initial state
@@ -281,7 +343,6 @@ class Simulation {
     }
 
     void printReactionHistory(Integer experiment, Map<Double, ReactionSpecification> reactionHistory){
-
         // Output file
         try {
             // Writing to file
