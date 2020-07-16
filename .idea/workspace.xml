@@ -2,29 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="61452078-e4b5-44c9-8233-77dbc639951a" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/SimParameters.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/output/dynamicStateMinimal.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/test-classes/SimParameters.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/IC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/IC.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/Master.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Master.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/NetworkBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/NetworkBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Parameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ReactionSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ReactionSpecification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/Reactions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Reactions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/SimAnalysis.R" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/SimAnalysis.R" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/Simulation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Simulation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/SimParameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/SimParameters.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/dynamicState.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/dynamicState.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/output/network.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/network.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/output/dynamicStateMinimal.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/dynamicStateMinimal.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/reactionHistory.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/reactionHistory.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/summarizedDynamicState.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/summarizedDynamicState.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/IC.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/IC.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/Master.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Master.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/NetworkBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/NetworkBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/Parameters.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Parameters.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/ReactionSpecification.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/ReactionSpecification.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/Reactions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Reactions.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/SimParameters.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/SimParameters.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/test-classes/Simulation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Simulation.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -38,11 +24,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Master.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Master.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/Master.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="43" column="36" lean-forward="true" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
+            <state relative-caret-position="403">
+              <caret line="50" column="67" lean-forward="true" selection-start-line="50" selection-start-column="67" selection-end-line="50" selection-end-column="67" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SimParameters.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/SimParameters.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -50,15 +45,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Simulation.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Simulation.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/Simulation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="105" column="71" lean-forward="true" selection-start-line="105" selection-start-column="71" selection-end-line="105" selection-end-column="71" />
+            <state relative-caret-position="136">
+              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#377#378#0" expanded="true" />
-                <element signature="e#411#412#0" expanded="true" />
+                <element signature="e#385#386#0" expanded="true" />
+                <element signature="e#432#433#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -67,8 +62,8 @@
       <file leaf-file-name="Parameters.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="119">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
             </state>
           </provider>
         </entry>
@@ -83,13 +78,20 @@
       <list>
         <option value="$PROJECT_DIR$/src/test/java/NetworkBuilder.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/test/java/SimParameters.java" />
         <option value="$PROJECT_DIR$/src/test/java/Simulation_.java" />
         <option value="$PROJECT_DIR$/src/test/java/Reactions.java" />
         <option value="$PROJECT_DIR$/src/test/java/Parameters.java" />
-        <option value="$PROJECT_DIR$/src/test/java/Master.java" />
         <option value="$PROJECT_DIR$/src/test/java/Simulation.java" />
+        <option value="$PROJECT_DIR$/src/test/java/SimParameters.java" />
+        <option value="$PROJECT_DIR$/src/test/java/Master.java" />
       </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
     </option>
   </component>
   <component name="MavenProjectNavigator">
@@ -232,7 +234,7 @@
     <layout>
       <window_info anchor="right" id="Palette" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" />
+      <window_info anchor="bottom" id="Messages" weight="0.32896462" />
       <window_info anchor="right" id="Palette&#9;" />
       <window_info id="Image Layers" />
       <window_info anchor="right" id="Capture Analysis" />
@@ -251,11 +253,32 @@
       <window_info anchor="right" id="Theme Preview" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" side_tool="true" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info id="Designer" order="2" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32896462" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info id="UI Designer" order="2" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Messages" order="7" />
+      <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info id="Favorites" order="2" side_tool="true" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -301,9 +324,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="246">
           <caret line="43" column="36" lean-forward="true" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -323,9 +343,95 @@
           <caret line="105" column="71" lean-forward="true" selection-start-line="105" selection-start-column="71" selection-end-line="105" selection-end-column="71" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#377#378#0" expanded="true" />
-            <element signature="e#411#412#0" expanded="true" />
+            <element signature="e#385#386#0" expanded="true" />
+            <element signature="e#432#433#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="10" selection-start-line="11" selection-start-column="10" selection-end-line="11" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="969">
+          <caret line="62" column="72" selection-start-line="62" selection-start-column="72" selection-end-line="62" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Master.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="17" column="63" selection-start-line="17" selection-start-column="63" selection-end-line="17" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="35" lean-forward="true" selection-start-line="8" selection-start-column="35" selection-end-line="8" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Simulation_.java" />
+    <entry file="file://$PROJECT_DIR$/src/test/java/Reactions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="392">
+          <caret line="29" column="96" selection-start-line="29" selection-start-column="96" selection-end-line="29" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Simulation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#385#386#0" expanded="true" />
+            <element signature="e#432#433#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/SimParameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Master.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="403">
+          <caret line="50" column="67" lean-forward="true" selection-start-line="50" selection-start-column="67" selection-end-line="50" selection-end-column="67" />
         </state>
       </provider>
     </entry>

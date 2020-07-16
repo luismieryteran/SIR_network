@@ -2,7 +2,10 @@ import javafx.util.Pair;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.stream.IntStream.range;
 
@@ -32,18 +35,28 @@ public class Master {
         Simulation simulation = new Simulation(t0);
         simulation.openOutputFiles(simParameters.outputPath, parameters.N);
 
+        for (Iterator<Integer> experiment =
+             IntStream.rangeClosed(1, simParameters.numberExperiments).iterator();
+             experiment.hasNext(); ){
 
-        for (int experiment = 1; experiment <= simParameters.numberExperiments; experiment++) {
-            NavigableMap<Double, ReactionSpecification> reactionHistory = new TreeMap<>();   // list of reactions and when they occur
-            MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState = new MutablePair(t0, ic.state);   // state of network in time
+            // Current experiment
+            Integer exp = experiment.next();
+
+            // list of reactions and when they occur
+            NavigableMap<Double, ReactionSpecification> reactionHistory = new TreeMap<>();
+
+            // state of network in time
+            MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState = new MutablePair(t0, ic.state);
 
             // Simulation
-            simulation.reactionStepping(experiment, dynamicState, reactionHistory, networkNeighbors, parameters);
+            simulation.reactionStepping(exp, dynamicState,
+                    reactionHistory, networkNeighbors, parameters);
 
             // Printing to File
-            simulation.printDynamicStateMinimal(experiment, ic.state, reactionHistory);
-            simulation.printReactionHistory(experiment, reactionHistory);
+            simulation.printDynamicStateMinimal(exp, ic.state, reactionHistory);
+            simulation.printReactionHistory(exp, reactionHistory);
         }
+
         simulation.closeOutputFiles();
 
     }
