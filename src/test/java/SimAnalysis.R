@@ -12,6 +12,11 @@ library(GGally)}
 select <- dplyr::select
 
 
+colors <- tableau_color_pal(palette = "Tableau 10", 
+                            type = c("regular",
+                                     "ordered-sequential", 
+                                     "ordered-diverging"), direction = 1)(5)[c(1, 3, 5)]
+
 # ---------------------------------------
 #     Test
 # ---------------------------------------
@@ -84,7 +89,8 @@ SimSummary.long <- read_csv("../output/summarizedDynamicState.csv") %>%
 
 SimSummary.long %>%
   ggplot() +
-  geom_line(aes(x = t, y = Count, group = State, color = factor(State, levels = c("S", "I", "R")))) +
+  geom_line(aes(x = t, y = Count, group = interaction(iter, State), 
+                color = factor(State, levels = c("S", "I", "R"))), alpha = 0.3) +
   scale_color_manual(name = "State", values = colors)
 
 
@@ -220,7 +226,7 @@ animate(p, nframes = nframes,
 # ---------------------------------------
 #     Solving ODEs for SIR
 # ---------------------------------------
-N <- 5000
+N <- SimSummary.long %>% filter(iter == 1, t == 0) %>% pull(Count) %>% sum()
 gamma <- 0.2
 R0 <- 2.5
 
@@ -239,7 +245,7 @@ SIR <- function(t, state, parameters) {
   })
 }
 
-t <- seq(0, 60, by = 0.01)
+t <- seq(0, 80, by = 0.01)
 
 sim <- ode(y = state, times = t, func = SIR, parms = parameters) %>%
   as_tibble() %>% pivot_longer(-time, names_to = "compartment")
@@ -247,9 +253,8 @@ sim <- ode(y = state, times = t, func = SIR, parms = parameters) %>%
 sim %>%
   ggplot() +
   geom_line(aes(x = time, y = value, group = compartment, color = factor(compartment, levels = c("S", "I", "R"))), size = 1) +
-  scale_color_discrete(name = "State") +
+  scale_color_manual(name = "State", values = colors) +
   coord_cartesian(xlim = c(0, 60), y = c(0, N))
-
 
 
 SimSummary.long %>%
@@ -258,8 +263,7 @@ SimSummary.long %>%
                 color = factor(State, levels = c("S", "I", "R"))), alpha = 0.2) +
   geom_line(data = sim, 
             aes(x = time, y = value, group = compartment, color = factor(compartment, levels = c("S", "I", "R"))), size = 1) +
-  scale_color_discrete(name = "State") +
+  scale_color_manual(name = "State", values = colors) +
   coord_cartesian(xlim = c(0, 60), y = c(0, N))
-
 
 

@@ -1,13 +1,8 @@
-import javafx.util.Pair;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.IntStream.range;
 
 public class Master {
 
@@ -50,7 +45,7 @@ public class Master {
             MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState = new MutablePair(t0, ic.state);
 
             // Sim setup
-            simulation.simulationSetUp(dynamicState);
+            simulation.simulationSetUp(dynamicState, networkNeighbors, parameters);
 
             // Simulation
             simulation.reactionStepping(exp, dynamicState,
