@@ -1,6 +1,4 @@
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.math3.distribution.GammaDistribution;
-import sun.nio.ch.Net;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +30,7 @@ class Simulation {
     void simulationSetUp(NetworkState initialState,
                          Map<Integer, List<Integer>> networkNeighbors,
                          Parameters parameters){
-        Map<Integer, Compartments> ic = initialState.state;
+        Map<Integer, Compartments> ic = initialState.getState();
 
         recoveryTimesByNode.clear();
         reactionsToCome.clear();
@@ -63,7 +61,7 @@ class Simulation {
 
     private void assignRecoveryTimeToInfectedNode(Integer node, NetworkState networkState, Parameters parameters){
 
-        Double currentTime = networkState.time;
+        Double currentTime = networkState.getTime();
 
         Double recoveryTime = currentTime + recoveryTime(1.0 / parameters.recov_scale);
         recoveryTimesByNode.put(node, recoveryTime);
@@ -76,11 +74,11 @@ class Simulation {
                                                      NetworkState networkState,
                                                      Map<Integer, List<Integer>> networkNeighbors, Parameters parameters){
 
-        Double currentTime = networkState.time;
+        Double currentTime = networkState.getTime();
 
         // Cycling over contacts of node to consider transmission
         for (Integer contactNode : networkNeighbors.get(sourceNode)){
-            if ( networkState.state.get(contactNode) == Compartments.S ) {
+            if ( networkState.getState().get(contactNode) == Compartments.S ) {
                 Double potentialInfectionTime = currentTime + transmissionTime(parameters.beta);
 
                 // If transmission happens before recovery of source, proceed
@@ -93,7 +91,7 @@ class Simulation {
     }
 
     private Map<Compartments, Long> numberOfNodesByCompartment(NetworkState networkState){
-      return networkState.state
+      return networkState.getState()
               .values()
               .stream()
               .collect(Collectors.groupingBy(
@@ -110,7 +108,7 @@ class Simulation {
 
         // Modifying oldState into newState because of reaction
         SortedMap<Integer, Compartments> newState = new TreeMap<>();
-        newState.putAll(networkState.state);
+        newState.putAll(networkState.getState());
 
         if ( reactionsToCome.firstEntry().getValue().reactionType == ReactionType.Infection ){
 
@@ -123,8 +121,8 @@ class Simulation {
                 newState.put(targetNode, Compartments.I);
 
                 // Updating state
-                networkState.time = reactionTime;
-                networkState.state = newState;
+                networkState.setTime(reactionTime);
+                networkState.setState(newState);
 
                 // Updating reaction history
                 reactionHistory.put(reactionTime,
@@ -142,8 +140,8 @@ class Simulation {
             newState.put(recoveringNode, Compartments.R);
 
             // Updating state
-            networkState.time = reactionTime;
-            networkState.state = newState;
+            networkState.setTime(reactionTime);
+            networkState.setState(newState);
 
             // Updating reaction history
             reactionHistory.put(reactionTime,
@@ -248,11 +246,11 @@ class Simulation {
             // Writing to file
             writernetworkState.append(experiment.toString());
             writernetworkState.append(", ");
-            writernetworkState.append(String.valueOf(networkState.time));
+            writernetworkState.append(String.valueOf(networkState.getTime()));
             writernetworkState.append(", ");
 
-            for (Iterator<Integer> it = networkState.state.keySet().iterator(); it.hasNext(); ) {
-                writernetworkState.append(String.valueOf(networkState.state.get(it.next())));
+            for (Iterator<Integer> it = networkState.getState().keySet().iterator(); it.hasNext(); ) {
+                writernetworkState.append(String.valueOf(networkState.getState().get(it.next())));
 
                 if ( it.hasNext() ) {
                     writernetworkState.append(", ");
@@ -279,7 +277,7 @@ class Simulation {
             // Writing to file
             writerSummarizednetworkState.append(experiment.toString());
             writerSummarizednetworkState.append(", ");
-            writerSummarizednetworkState.append(String.valueOf(networkState.time));
+            writerSummarizednetworkState.append(String.valueOf(networkState.getTime()));
             writerSummarizednetworkState.append(", ");
 
             for ( Compartments compartments : Compartments.values() ){

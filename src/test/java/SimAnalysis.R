@@ -228,7 +228,7 @@ animate(p, nframes = nframes,
 # ---------------------------------------
 N <- SimSummary.long %>% filter(iter == 1, t == 0) %>% pull(Count) %>% sum()
 gamma <- 0.2
-R0 <- 3.5
+R0 <- 2.5
 
 parameters <- c(beta = R0 * gamma,
                 gamma = gamma, 
