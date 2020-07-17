@@ -2,7 +2,7 @@ import java.util.*;
 
 class IC {
 
-    SortedMap<Integer, Compartments> state = new TreeMap<>();
+    NavigableMap<Integer, Compartments> state = new TreeMap<>();
 
     IC(Integer N){
         Random random = new Random(1234567890);

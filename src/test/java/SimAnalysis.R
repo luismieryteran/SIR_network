@@ -84,7 +84,7 @@ InfectionNbrs %>%
   ylim(c(0, 7))
 
 
-SimSummary.long <- read_csv("../output/summarizedDynamicState.csv") %>%
+SimSummary.long <- read_csv("../output/summarizednetworkState.csv") %>%
   pivot_longer(-c(t, iter), names_to = "State", values_to = "Count")
 
 SimSummary.long %>%
@@ -117,7 +117,7 @@ InfectionNbrs %>%
 
 
 
-Sim <- read_csv("../output/dynamicState.csv")
+Sim <- read_csv("../output/networkState.csv")
 IC <- Sim %>% slice(1) %>% select(-1) %>%
   pivot_longer(cols = everything(), names_to = "Node")
 
@@ -228,7 +228,7 @@ animate(p, nframes = nframes,
 # ---------------------------------------
 N <- SimSummary.long %>% filter(iter == 1, t == 0) %>% pull(Count) %>% sum()
 gamma <- 0.2
-R0 <- 2.5
+R0 <- 3.5
 
 parameters <- c(beta = R0 * gamma,
                 gamma = gamma, 
@@ -260,10 +260,20 @@ sim %>%
 SimSummary.long %>%
   ggplot() +
   geom_line(aes(x = t, y = Count, group = interaction(iter, State), 
-                color = factor(State, levels = c("S", "I", "R"))), alpha = 0.2) +
+                color = factor(State, levels = c("S", "I", "R"))), alpha = 0.1) +
   geom_line(data = sim, 
             aes(x = time, y = value, group = compartment, color = factor(compartment, levels = c("S", "I", "R"))), size = 1) +
   scale_color_manual(name = "State", values = colors) +
   coord_cartesian(xlim = c(0, 60), y = c(0, N))
 
 
+SimSummary.long %>%
+  group_by(iter) %>%
+  filter(max(t) <= 15) %>%
+  ggplot() +
+  geom_line(aes(x = t, y = Count, group = interaction(iter, State), 
+                color = factor(State, levels = c("S", "I", "R"))), alpha = 0.2) +
+  scale_color_manual(name = "State", values = colors) +
+  coord_cartesian(xlim = c(0, 60), y = c(0, N))
+
+ggsave(filename = "../output/SIR_network_3000nodes.pdf", height = 5, width = 10)

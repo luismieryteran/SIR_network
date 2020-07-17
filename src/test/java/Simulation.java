@@ -1,5 +1,6 @@
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.math3.distribution.GammaDistribution;
+import sun.nio.ch.Net;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,10 +29,10 @@ class Simulation {
         this.random = new Random(randomSeed);
     }
 
-    void simulationSetUp(MutablePair<Double, SortedMap<Integer, Compartments>> initialState,
+    void simulationSetUp(NetworkState initialState,
                          Map<Integer, List<Integer>> networkNeighbors,
                          Parameters parameters){
-        Map<Integer, Compartments> ic = initialState.getValue();
+        Map<Integer, Compartments> ic = initialState.state;
 
         recoveryTimesByNode.clear();
         reactionsToCome.clear();
@@ -39,30 +40,32 @@ class Simulation {
         // Adding recovery and transmission times to initially infected nodes
         for ( Integer node : ic.keySet() ){
             if ( ic.get(node) == Compartments.I ){
-                assignRecoveryTimeToInfectedNode(node, initialState);
+                assignRecoveryTimeToInfectedNode(node, initialState, parameters);
 
                 assignTransmissionTimesToSourceNode(node, initialState, networkNeighbors, parameters);
             }
         }
     }
 
-    private Double transmissionTime(Double lambda){
-        if ( lambda == 0 ) {
+    private Double transmissionTime(Double rate){
+        if ( rate == 0 ) {
             return Double.POSITIVE_INFINITY;
         } else {
-            return Math.log(1 - random.nextDouble()) / ( - lambda );
+            return Math.log(1 - random.nextDouble()) / ( - rate );
         }
     }
 
-    private Double recoveryTime() {
-        return infectiousPeriodDistribution.sample();
+    private Double recoveryTime(Double rate) {
+        return Math.log(1 - random.nextDouble()) / ( - rate );
+
+//        return infectiousPeriodDistribution.sample();
     }
 
-    private void assignRecoveryTimeToInfectedNode(Integer node, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
+    private void assignRecoveryTimeToInfectedNode(Integer node, NetworkState networkState, Parameters parameters){
 
-        Double currentTime = dynamicState.getKey();
+        Double currentTime = networkState.time;
 
-        Double recoveryTime = currentTime + recoveryTime();
+        Double recoveryTime = currentTime + recoveryTime(1.0 / parameters.recov_scale);
         recoveryTimesByNode.put(node, recoveryTime);
 
         reactionsToCome.put(recoveryTime,
@@ -70,14 +73,14 @@ class Simulation {
     }
 
     private void assignTransmissionTimesToSourceNode(Integer sourceNode,
-                                                     MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
+                                                     NetworkState networkState,
                                                      Map<Integer, List<Integer>> networkNeighbors, Parameters parameters){
 
-        Double currentTime = dynamicState.getKey();
+        Double currentTime = networkState.time;
 
         // Cycling over contacts of node to consider transmission
         for (Integer contactNode : networkNeighbors.get(sourceNode)){
-            if ( dynamicState.getValue().get(contactNode) == Compartments.S ) {
+            if ( networkState.state.get(contactNode) == Compartments.S ) {
                 Double potentialInfectionTime = currentTime + transmissionTime(parameters.beta);
 
                 // If transmission happens before recovery of source, proceed
@@ -89,8 +92,8 @@ class Simulation {
         }
     }
 
-    private Map<Compartments, Long> numberOfNodesByCompartment(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
-      return dynamicState.getValue()
+    private Map<Compartments, Long> numberOfNodesByCompartment(NetworkState networkState){
+      return networkState.state
               .values()
               .stream()
               .collect(Collectors.groupingBy(
@@ -98,7 +101,7 @@ class Simulation {
                       Collectors.counting()));
     }
 
-    private void reactionStep(MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
+    private void reactionStep(NetworkState networkState,
                               NavigableMap<Double, ReactionSpecification> reactionHistory,
                               Map<Integer, List<Integer>> networkNeighbors, Parameters parameters){
 
@@ -107,7 +110,7 @@ class Simulation {
 
         // Modifying oldState into newState because of reaction
         SortedMap<Integer, Compartments> newState = new TreeMap<>();
-        newState.putAll(dynamicState.getValue());
+        newState.putAll(networkState.state);
 
         if ( reactionsToCome.firstEntry().getValue().reactionType == ReactionType.Infection ){
 
@@ -120,16 +123,16 @@ class Simulation {
                 newState.put(targetNode, Compartments.I);
 
                 // Updating state
-                dynamicState.setLeft(reactionTime);
-                dynamicState.setRight(newState);
+                networkState.time = reactionTime;
+                networkState.state = newState;
 
                 // Updating reaction history
                 reactionHistory.put(reactionTime,
                         new ReactionSpecification(ReactionType.Infection, Arrays.asList(sourceNode, targetNode)));
 
                 // Assigning recovery and transmission times for newly infected node
-                assignRecoveryTimeToInfectedNode(targetNode, dynamicState);
-                assignTransmissionTimesToSourceNode(targetNode, dynamicState, networkNeighbors, parameters);
+                assignRecoveryTimeToInfectedNode(targetNode, networkState, parameters);
+                assignTransmissionTimesToSourceNode(targetNode, networkState, networkNeighbors, parameters);
             }
 
         } else if ( reactionsToCome.firstEntry().getValue().reactionType == ReactionType.Recovery ) {
@@ -139,8 +142,8 @@ class Simulation {
             newState.put(recoveringNode, Compartments.R);
 
             // Updating state
-            dynamicState.setLeft(reactionTime);
-            dynamicState.setRight(newState);
+            networkState.time = reactionTime;
+            networkState.state = newState;
 
             // Updating reaction history
             reactionHistory.put(reactionTime,
@@ -148,73 +151,73 @@ class Simulation {
         }
     }
 
-    void reactionStepping(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState,
+    void reactionStepping(Integer experiment, NetworkState networkState,
                           NavigableMap<Double, ReactionSpecification> reactionHistory,
                           Map<Integer, List<Integer>> networkNeighbors, Parameters parameters) {
 
         // Printing IC
-        printDynamicState(experiment, dynamicState);
-        printSummarizedDynamicState(experiment, dynamicState);
+        printnetworkState(experiment, networkState);
+        printSummarizednetworkState(experiment, networkState);
 
         while ( reactionsToCome.size() > 0 ) {
 //        for (int i = 1; i <= 10; i++){
             // Single step
-            reactionStep(dynamicState, reactionHistory, networkNeighbors, parameters);
+            reactionStep(networkState, reactionHistory, networkNeighbors, parameters);
 
             // Printing new state to files
             if ( parameters.N <= 200 & experiment <= 10){
-                printDynamicState(experiment, dynamicState);
+                printnetworkState(experiment, networkState);
             }
-            printSummarizedDynamicState(experiment, dynamicState);
+            printSummarizednetworkState(experiment, networkState);
         }
 
     }
 
 
-    private FileWriter writerSummarizedDynamicState;
-    private FileWriter writerDynamicState;
-    private FileWriter writerDynamicStateMinimal;
+    private FileWriter writerSummarizednetworkState;
+    private FileWriter writernetworkState;
+    private FileWriter writernetworkStateMinimal;
     private FileWriter writerReactionHistory;
     void openOutputFiles(String outputPath, Integer networkSize) {
         try {
             //------------- Summarized Dynamic State
-            writerSummarizedDynamicState =
+            writerSummarizednetworkState =
                     new FileWriter(outputPath + "summarizedDynamicState.csv");
 
             // File headers
-            writerSummarizedDynamicState.append("iter, t, ");
+            writerSummarizednetworkState.append("iter, t, ");
             for (Compartments compartments : Compartments.values()) {
-                writerSummarizedDynamicState.append(String.valueOf(compartments));
+                writerSummarizednetworkState.append(String.valueOf(compartments));
 
                 if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-                    writerSummarizedDynamicState.append("\n");
+                    writerSummarizednetworkState.append("\n");
                 } else {
-                    writerSummarizedDynamicState.append(", ");
+                    writerSummarizednetworkState.append(", ");
                 }
             }
 
             //------------- Detailed Dynamic State
-            writerDynamicState =
+            writernetworkState =
                     new FileWriter(outputPath + "dynamicState.csv");
 
             // File headers
-            writerDynamicState.append("iter, t, ");
+            writernetworkState.append("iter, t, ");
             for (Integer node = 1; node <= networkSize; node++) {
-                writerDynamicState.append(node.toString());
+                writernetworkState.append(node.toString());
 
                 if ( node.equals(networkSize) ) {
-                    writerDynamicState.append("\n");
+                    writernetworkState.append("\n");
                 } else {
-                    writerDynamicState.append(", ");
+                    writernetworkState.append(", ");
                 }
             }
 
             //------------- Detailed Dynamic State Minimal
-            writerDynamicStateMinimal =
+            writernetworkStateMinimal =
                     new FileWriter(outputPath + "dynamicStateMinimal.csv");
 
             // File headers
-            writerDynamicStateMinimal.append("iter, t, node, compartment\n");
+            writernetworkStateMinimal.append("iter, t, node, compartment\n");
 
             //------------- Reaction History
             writerReactionHistory =
@@ -229,9 +232,9 @@ class Simulation {
 
     void closeOutputFiles(){
         try {
-            writerSummarizedDynamicState.close();
-            writerDynamicState.close();
-            writerDynamicStateMinimal.close();
+            writerSummarizednetworkState.close();
+            writernetworkState.close();
+            writernetworkStateMinimal.close();
             writerReactionHistory.close();
 
         } catch (IOException e) {
@@ -239,22 +242,22 @@ class Simulation {
         }
     }
 
-    private void printDynamicState(Integer experiment, MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState){
+    private void printnetworkState(Integer experiment, NetworkState networkState){
         // Output file
         try  {
             // Writing to file
-            writerDynamicState.append(experiment.toString());
-            writerDynamicState.append(", ");
-            writerDynamicState.append(String.valueOf(dynamicState.getKey()));
-            writerDynamicState.append(", ");
+            writernetworkState.append(experiment.toString());
+            writernetworkState.append(", ");
+            writernetworkState.append(String.valueOf(networkState.time));
+            writernetworkState.append(", ");
 
-            for (Iterator<Integer> it = dynamicState.getValue().keySet().iterator(); it.hasNext(); ) {
-                writerDynamicState.append(String.valueOf(dynamicState.getValue().get(it.next())));
+            for (Iterator<Integer> it = networkState.state.keySet().iterator(); it.hasNext(); ) {
+                writernetworkState.append(String.valueOf(networkState.state.get(it.next())));
 
                 if ( it.hasNext() ) {
-                    writerDynamicState.append(", ");
+                    writernetworkState.append(", ");
                 } else {
-                    writerDynamicState.append("\n");
+                    writernetworkState.append("\n");
                 }
             }
         } catch (IOException e) {
@@ -263,29 +266,29 @@ class Simulation {
     }
 
 
-    private void printSummarizedDynamicState(Integer experiment,
-                                             MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState) {
+    private void printSummarizednetworkState(Integer experiment,
+                                             NetworkState networkState) {
 
         // Counting number of nodes in each compartment
-        Map<Compartments, Long> numbersByCompartment = numberOfNodesByCompartment(dynamicState);
+        Map<Compartments, Long> numbersByCompartment = numberOfNodesByCompartment(networkState);
         Arrays.stream(Compartments.values())
                 .forEach(c -> numbersByCompartment.putIfAbsent(c, (long) 0));
 
         // Output file
         try {
             // Writing to file
-            writerSummarizedDynamicState.append(experiment.toString());
-            writerSummarizedDynamicState.append(", ");
-            writerSummarizedDynamicState.append(String.valueOf(dynamicState.getKey()));
-            writerSummarizedDynamicState.append(", ");
+            writerSummarizednetworkState.append(experiment.toString());
+            writerSummarizednetworkState.append(", ");
+            writerSummarizednetworkState.append(String.valueOf(networkState.time));
+            writerSummarizednetworkState.append(", ");
 
             for ( Compartments compartments : Compartments.values() ){
-                    writerSummarizedDynamicState.append(String.valueOf(numbersByCompartment.get(compartments)));
+                    writerSummarizednetworkState.append(String.valueOf(numbersByCompartment.get(compartments)));
 
                     if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-                        writerSummarizedDynamicState.append("\n");
+                        writerSummarizednetworkState.append("\n");
                     } else {
-                        writerSummarizedDynamicState.append(", ");
+                        writerSummarizednetworkState.append(", ");
                     }
             }
 
@@ -294,39 +297,39 @@ class Simulation {
         }
     }
 
-    void printDynamicStateMinimal(Integer experiment,
-                                  SortedMap<Integer, Compartments> initialState,
+    void printnetworkStateMinimal(Integer experiment,
+                                  NavigableMap<Integer, Compartments> initialState,
                                   NavigableMap<Double, ReactionSpecification> reactionHistory){
         // Output file
         try {
             // Initial state
             for (Map.Entry<Integer, Compartments> nodeState : initialState.entrySet()) {
-                writerDynamicStateMinimal.append(experiment.toString());
-                writerDynamicStateMinimal.append(", ");
-                writerDynamicStateMinimal.append(simulationStartTime.toString());
-                writerDynamicStateMinimal.append(", ");
-                writerDynamicStateMinimal.append(nodeState.getKey().toString());
-                writerDynamicStateMinimal.append(", ");
-                writerDynamicStateMinimal.append(nodeState.getValue().toString());
-                writerDynamicStateMinimal.append("\n");
+                writernetworkStateMinimal.append(experiment.toString());
+                writernetworkStateMinimal.append(", ");
+                writernetworkStateMinimal.append(simulationStartTime.toString());
+                writernetworkStateMinimal.append(", ");
+                writernetworkStateMinimal.append(nodeState.getKey().toString());
+                writernetworkStateMinimal.append(", ");
+                writernetworkStateMinimal.append(nodeState.getValue().toString());
+                writernetworkStateMinimal.append("\n");
             }
 
             // Writing to file
             for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
-                writerDynamicStateMinimal.append(experiment.toString());
-                writerDynamicStateMinimal.append(", ");
-                writerDynamicStateMinimal.append(entry.getKey().toString());
-                writerDynamicStateMinimal.append(", ");
+                writernetworkStateMinimal.append(experiment.toString());
+                writernetworkStateMinimal.append(", ");
+                writernetworkStateMinimal.append(entry.getKey().toString());
+                writernetworkStateMinimal.append(", ");
                 if (entry.getValue().reactionType == ReactionType.Infection) {
-                    writerDynamicStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
-                    writerDynamicStateMinimal.append(", ");
-                    writerDynamicStateMinimal.append(Compartments.I.toString());
+                    writernetworkStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
+                    writernetworkStateMinimal.append(", ");
+                    writernetworkStateMinimal.append(Compartments.I.toString());
                 } else if (entry.getValue().reactionType == ReactionType.Recovery) {
-                    writerDynamicStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
-                    writerDynamicStateMinimal.append(", ");
-                    writerDynamicStateMinimal.append(Compartments.R.toString());
+                    writernetworkStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
+                    writernetworkStateMinimal.append(", ");
+                    writernetworkStateMinimal.append(Compartments.R.toString());
                 }
-                writerDynamicStateMinimal.append("\n");
+                writernetworkStateMinimal.append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -42,17 +42,17 @@ public class Master {
             NavigableMap<Double, ReactionSpecification> reactionHistory = new TreeMap<>();
 
             // state of network in time
-            MutablePair<Double, SortedMap<Integer, Compartments>> dynamicState = new MutablePair(t0, ic.state);
+            NetworkState networkState = new NetworkState(t0, ic.state);
 
             // Sim setup
-            simulation.simulationSetUp(dynamicState, networkNeighbors, parameters);
+            simulation.simulationSetUp(networkState, networkNeighbors, parameters);
 
             // Simulation
-            simulation.reactionStepping(exp, dynamicState,
+            simulation.reactionStepping(exp, networkState,
                     reactionHistory, networkNeighbors, parameters);
 
             // Printing to File
-            simulation.printDynamicStateMinimal(exp, ic.state, reactionHistory);
+            simulation.printnetworkStateMinimal(exp, ic.state, reactionHistory);
             simulation.printReactionHistory(exp, reactionHistory);
         }
 
