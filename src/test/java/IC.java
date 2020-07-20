@@ -2,7 +2,7 @@ import java.util.*;
 
 class IC {
     Random random = new Random(1234567890);
-    private Integer initialInfecteds = 5;
+    private Integer initialInfecteds = 20;
     NetworkState initialState;
 
     IC(Double simulationStartTime, Integer N){

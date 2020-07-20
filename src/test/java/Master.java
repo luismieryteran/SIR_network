@@ -51,9 +51,6 @@ public class Master {
             simulation.reactionStepping(exp, networkState,
                     reactionHistory, networkNeighbors, parameters);
 
-            // Printing to File
-//            simulation.printNetworkStateMinimal(exp, ic.state, reactionHistory);
-//            simulation.printReactionHistory(exp, reactionHistory);
         }
 
         PrintOutput.closeOutputFiles();

@@ -35,6 +35,7 @@ class Simulation {
         Map<Integer, Compartments> ic = initialState.getState();
 
         recoveryTimesByNode.clear();
+        infectionTimesByNode.clear();
         reactionsToCome.clear();
 
         // Adding recovery and transmission times to initially infected nodes
