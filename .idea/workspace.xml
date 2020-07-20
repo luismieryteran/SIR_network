@@ -3,21 +3,15 @@
   <component name="ChangeListManager">
     <list default="true" id="61452078-e4b5-44c9-8233-77dbc639951a" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/IC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/IC.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/Master.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Master.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/NetworkState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/NetworkState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Parameters.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/SimAnalysis.R" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/SimAnalysis.R" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/Simulation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Simulation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/output/SIR_network_3000nodes.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/SIR_network_3000nodes.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/dynamicState.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/dynamicState.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/dynamicStateMinimal.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/dynamicStateMinimal.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/output/network.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/network.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/reactionHistory.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/reactionHistory.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/output/summarizedDynamicState.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/output/summarizedDynamicState.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/IC.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/IC.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/Master.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Master.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/NetworkState.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/NetworkState.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/Parameters.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Parameters.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/Simulation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/Simulation.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -33,7 +27,7 @@
       <file leaf-file-name="Master.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/Master.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
+            <state relative-caret-position="302">
               <caret line="52" column="36" selection-start-line="52" selection-start-column="36" selection-end-line="52" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -42,20 +36,30 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NetworkState.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="NetworkState.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/NetworkState.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
+            <state relative-caret-position="238">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
+              <folding>
+                <element signature="e#339#340#0" expanded="true" />
+                <element signature="e#373#374#0" expanded="true" />
+                <element signature="e#413#414#0" expanded="true" />
+                <element signature="e#445#446#0" expanded="true" />
+                <element signature="e#476#477#0" expanded="true" />
+                <element signature="e#503#504#0" expanded="true" />
+                <element signature="e#561#562#0" expanded="true" />
+                <element signature="e#589#590#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Simulation.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Simulation.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/Simulation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="120">
+              <caret line="174" column="40" selection-start-line="174" selection-start-column="40" selection-end-line="174" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -75,8 +79,8 @@
       <file leaf-file-name="Parameters.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" selection-start-line="10" selection-end-line="10" />
+            <state relative-caret-position="17">
+              <caret line="1" column="17" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -93,8 +97,8 @@
       <file leaf-file-name="SimParameters.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/SimParameters.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="63" selection-start-line="6" selection-start-column="63" selection-end-line="6" selection-end-column="63" />
+            <state relative-caret-position="136">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -125,16 +129,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/test/java/NetworkBuilder.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/test/java/Simulation_.java" />
         <option value="$PROJECT_DIR$/src/test/java/Reactions.java" />
         <option value="$PROJECT_DIR$/src/test/java/SimParameters.java" />
-        <option value="$PROJECT_DIR$/src/test/java/Parameters.java" />
         <option value="$PROJECT_DIR$/src/test/java/IC.java" />
         <option value="$PROJECT_DIR$/src/test/java/Master.java" />
         <option value="$PROJECT_DIR$/src/test/java/NetworkState.java" />
+        <option value="$PROJECT_DIR$/src/test/java/Parameters.java" />
         <option value="$PROJECT_DIR$/src/test/java/Simulation.java" />
+        <option value="$PROJECT_DIR$/src/test/java/NetworkBuilder.java" />
       </list>
     </option>
   </component>
@@ -291,12 +295,12 @@
       <window_info anchor="right" id="Capture Analysis" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32896462" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32896462" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Terminal" />
       <window_info id="Capture Tool" />
       <window_info id="Designer" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17533334" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17533334" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32896462" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -605,13 +609,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/Simulation_.java" />
-    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -620,27 +617,10 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/Reactions.java" />
-    <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/IC.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/SimParameters.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="63" selection-start-line="6" selection-start-column="63" selection-end-line="6" selection-end-column="63" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -651,9 +631,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#339#340#0" expanded="true" />
+            <element signature="e#373#374#0" expanded="true" />
+            <element signature="e#413#414#0" expanded="true" />
+            <element signature="e#445#446#0" expanded="true" />
+            <element signature="e#476#477#0" expanded="true" />
+            <element signature="e#503#504#0" expanded="true" />
+            <element signature="e#561#562#0" expanded="true" />
+            <element signature="e#589#590#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/SimParameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Parameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="17" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="57" column="37" selection-start-line="57" selection-start-column="37" selection-end-line="57" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/Master.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
+        <state relative-caret-position="302">
           <caret line="52" column="36" selection-start-line="52" selection-start-column="36" selection-end-line="52" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -663,18 +684,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/Simulation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="120">
+          <caret line="174" column="40" selection-start-line="174" selection-start-column="40" selection-end-line="174" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/NetworkState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>

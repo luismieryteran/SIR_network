@@ -155,7 +155,7 @@ class Simulation {
 
         // Printing IC
         printnetworkState(experiment, networkState);
-        printSummarizednetworkState(experiment, networkState);
+        printSummarizedNetworkState(experiment, networkState);
 
         while ( reactionsToCome.size() > 0 ) {
 //        for (int i = 1; i <= 10; i++){
@@ -166,56 +166,56 @@ class Simulation {
             if ( parameters.N <= 200 & experiment <= 10){
                 printnetworkState(experiment, networkState);
             }
-            printSummarizednetworkState(experiment, networkState);
+            printSummarizedNetworkState(experiment, networkState);
         }
 
     }
 
 
-    private FileWriter writerSummarizednetworkState;
-    private FileWriter writernetworkState;
-    private FileWriter writernetworkStateMinimal;
+    private FileWriter writerSummarizedNetworkState;
+    private FileWriter writerNetworkState;
+    private FileWriter writerNetworkStateMinimal;
     private FileWriter writerReactionHistory;
     void openOutputFiles(String outputPath, Integer networkSize) {
         try {
             //------------- Summarized Dynamic State
-            writerSummarizednetworkState =
+            writerSummarizedNetworkState =
                     new FileWriter(outputPath + "summarizedDynamicState.csv");
 
             // File headers
-            writerSummarizednetworkState.append("iter, t, ");
+            writerSummarizedNetworkState.append("iter, t, ");
             for (Compartments compartments : Compartments.values()) {
-                writerSummarizednetworkState.append(String.valueOf(compartments));
+                writerSummarizedNetworkState.append(String.valueOf(compartments));
 
                 if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-                    writerSummarizednetworkState.append("\n");
+                    writerSummarizedNetworkState.append("\n");
                 } else {
-                    writerSummarizednetworkState.append(", ");
+                    writerSummarizedNetworkState.append(", ");
                 }
             }
 
             //------------- Detailed Dynamic State
-            writernetworkState =
+            writerNetworkState =
                     new FileWriter(outputPath + "dynamicState.csv");
 
             // File headers
-            writernetworkState.append("iter, t, ");
+            writerNetworkState.append("iter, t, ");
             for (Integer node = 1; node <= networkSize; node++) {
-                writernetworkState.append(node.toString());
+                writerNetworkState.append(node.toString());
 
                 if ( node.equals(networkSize) ) {
-                    writernetworkState.append("\n");
+                    writerNetworkState.append("\n");
                 } else {
-                    writernetworkState.append(", ");
+                    writerNetworkState.append(", ");
                 }
             }
 
             //------------- Detailed Dynamic State Minimal
-            writernetworkStateMinimal =
+            writerNetworkStateMinimal =
                     new FileWriter(outputPath + "dynamicStateMinimal.csv");
 
             // File headers
-            writernetworkStateMinimal.append("iter, t, node, compartment\n");
+            writerNetworkStateMinimal.append("iter, t, node, compartment\n");
 
             //------------- Reaction History
             writerReactionHistory =
@@ -230,9 +230,9 @@ class Simulation {
 
     void closeOutputFiles(){
         try {
-            writerSummarizednetworkState.close();
-            writernetworkState.close();
-            writernetworkStateMinimal.close();
+            writerSummarizedNetworkState.close();
+            writerNetworkState.close();
+            writerNetworkStateMinimal.close();
             writerReactionHistory.close();
 
         } catch (IOException e) {
@@ -244,18 +244,18 @@ class Simulation {
         // Output file
         try  {
             // Writing to file
-            writernetworkState.append(experiment.toString());
-            writernetworkState.append(", ");
-            writernetworkState.append(String.valueOf(networkState.getTime()));
-            writernetworkState.append(", ");
+            writerNetworkState.append(experiment.toString());
+            writerNetworkState.append(", ");
+            writerNetworkState.append(String.valueOf(networkState.getTime()));
+            writerNetworkState.append(", ");
 
             for (Iterator<Integer> it = networkState.getState().keySet().iterator(); it.hasNext(); ) {
-                writernetworkState.append(String.valueOf(networkState.getState().get(it.next())));
+                writerNetworkState.append(String.valueOf(networkState.getState().get(it.next())));
 
                 if ( it.hasNext() ) {
-                    writernetworkState.append(", ");
+                    writerNetworkState.append(", ");
                 } else {
-                    writernetworkState.append("\n");
+                    writerNetworkState.append("\n");
                 }
             }
         } catch (IOException e) {
@@ -264,7 +264,7 @@ class Simulation {
     }
 
 
-    private void printSummarizednetworkState(Integer experiment,
+    private void printSummarizedNetworkState(Integer experiment,
                                              NetworkState networkState) {
 
         // Counting number of nodes in each compartment
@@ -275,18 +275,18 @@ class Simulation {
         // Output file
         try {
             // Writing to file
-            writerSummarizednetworkState.append(experiment.toString());
-            writerSummarizednetworkState.append(", ");
-            writerSummarizednetworkState.append(String.valueOf(networkState.getTime()));
-            writerSummarizednetworkState.append(", ");
+            writerSummarizedNetworkState.append(experiment.toString());
+            writerSummarizedNetworkState.append(", ");
+            writerSummarizedNetworkState.append(String.valueOf(networkState.getTime()));
+            writerSummarizedNetworkState.append(", ");
 
             for ( Compartments compartments : Compartments.values() ){
-                    writerSummarizednetworkState.append(String.valueOf(numbersByCompartment.get(compartments)));
+                    writerSummarizedNetworkState.append(String.valueOf(numbersByCompartment.get(compartments)));
 
                     if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-                        writerSummarizednetworkState.append("\n");
+                        writerSummarizedNetworkState.append("\n");
                     } else {
-                        writerSummarizednetworkState.append(", ");
+                        writerSummarizedNetworkState.append(", ");
                     }
             }
 
@@ -302,32 +302,32 @@ class Simulation {
         try {
             // Initial state
             for (Map.Entry<Integer, Compartments> nodeState : initialState.entrySet()) {
-                writernetworkStateMinimal.append(experiment.toString());
-                writernetworkStateMinimal.append(", ");
-                writernetworkStateMinimal.append(simulationStartTime.toString());
-                writernetworkStateMinimal.append(", ");
-                writernetworkStateMinimal.append(nodeState.getKey().toString());
-                writernetworkStateMinimal.append(", ");
-                writernetworkStateMinimal.append(nodeState.getValue().toString());
-                writernetworkStateMinimal.append("\n");
+                writerNetworkStateMinimal.append(experiment.toString());
+                writerNetworkStateMinimal.append(", ");
+                writerNetworkStateMinimal.append(simulationStartTime.toString());
+                writerNetworkStateMinimal.append(", ");
+                writerNetworkStateMinimal.append(nodeState.getKey().toString());
+                writerNetworkStateMinimal.append(", ");
+                writerNetworkStateMinimal.append(nodeState.getValue().toString());
+                writerNetworkStateMinimal.append("\n");
             }
 
             // Writing to file
             for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
-                writernetworkStateMinimal.append(experiment.toString());
-                writernetworkStateMinimal.append(", ");
-                writernetworkStateMinimal.append(entry.getKey().toString());
-                writernetworkStateMinimal.append(", ");
+                writerNetworkStateMinimal.append(experiment.toString());
+                writerNetworkStateMinimal.append(", ");
+                writerNetworkStateMinimal.append(entry.getKey().toString());
+                writerNetworkStateMinimal.append(", ");
                 if (entry.getValue().reactionType == ReactionType.Infection) {
-                    writernetworkStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
-                    writernetworkStateMinimal.append(", ");
-                    writernetworkStateMinimal.append(Compartments.I.toString());
+                    writerNetworkStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
+                    writerNetworkStateMinimal.append(", ");
+                    writerNetworkStateMinimal.append(Compartments.I.toString());
                 } else if (entry.getValue().reactionType == ReactionType.Recovery) {
-                    writernetworkStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
-                    writernetworkStateMinimal.append(", ");
-                    writernetworkStateMinimal.append(Compartments.R.toString());
+                    writerNetworkStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
+                    writerNetworkStateMinimal.append(", ");
+                    writerNetworkStateMinimal.append(Compartments.R.toString());
                 }
-                writernetworkStateMinimal.append("\n");
+                writerNetworkStateMinimal.append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

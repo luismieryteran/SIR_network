@@ -55,18 +55,18 @@ class NetworkBuilder {
     void printNetwork(String outputPath, List<Pair<Integer, Integer>> network) throws IOException {
 
         // Output file
-        try (FileWriter writer =
+        try (FileWriter writerNetwork =
                      new FileWriter(outputPath + "network.csv")) {
 
-            writer.append("Node1, Node2 \n");
+            writerNetwork.append("Node1, Node2 \n");
             for (Pair linkedNodes : network) {
 
-                writer.append(String.valueOf(linkedNodes.getKey()));
-                writer.append(", ");
-                writer.append(String.valueOf(linkedNodes.getValue()));
-                writer.append("\n");
+                writerNetwork.append(String.valueOf(linkedNodes.getKey()));
+                writerNetwork.append(", ");
+                writerNetwork.append(String.valueOf(linkedNodes.getValue()));
+                writerNetwork.append("\n");
             }
-            writer.close();
+            writerNetwork.close();
         }
     }
 }
