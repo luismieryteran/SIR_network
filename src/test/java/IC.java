@@ -1,11 +1,13 @@
 import java.util.*;
 
 class IC {
-    Integer initialInfecteds = 20;
-    NavigableMap<Integer, Compartments> state = new TreeMap<>();
+    Random random = new Random(1234567890);
+    private Integer initialInfecteds = 5;
+    NetworkState initialState;
 
-    IC(Integer N){
-        Random random = new Random(1234567890);
+    IC(Double simulationStartTime, Integer N){
+
+        NavigableMap<Integer, Compartments> state = new TreeMap<>();
 
         // Making everyone S at the start
         for (int i = 1; i <= N; i++){
@@ -17,5 +19,6 @@ class IC {
             state.put(1 + random.nextInt(N-1), Compartments.I);
         }
 
+        initialState = new NetworkState(simulationStartTime, state);
     }
 }

@@ -11,7 +11,8 @@ public class Master {
         Parameters parameters = new Parameters();
 
         // IC
-        IC ic = new IC(parameters.N);
+        Double simulationStartTime = 0.0;   // initial time
+        IC ic = new IC(simulationStartTime, parameters.N);
 
         // Defining network
         NetworkBuilder networkBuilder = new NetworkBuilder();
@@ -23,11 +24,12 @@ public class Master {
         }
         Map<Integer, List<Integer>> networkNeighbors = networkBuilder.networkNeighbors;
 
-        // Simulation
-        Double t0 = 0.0;   // initial time
-        Simulation simulation = new Simulation(t0, parameters);
+        // Simulation setup
+        Simulation simulation = new Simulation(ic.initialState, parameters);
         simulation.seedRNG();
-        simulation.openOutputFiles(simParameters.outputPath, parameters.N);
+
+        // Opening output files
+        PrintOutput.openOutputFiles(simParameters.outputPath, parameters.N);
 
         for (Iterator<Integer> experiment =
              IntStream.rangeClosed(1, simParameters.numberExperiments).iterator();
@@ -40,7 +42,7 @@ public class Master {
             NavigableMap<Double, ReactionSpecification> reactionHistory = new TreeMap<>();
 
             // state of network in time
-            NetworkState networkState = new NetworkState(t0, ic.state);
+            NetworkState networkState = new NetworkState(ic.initialState.getTime(), ic.initialState.getState());
 
             // Sim setup
             simulation.simulationSetUp(networkState, networkNeighbors, parameters);
@@ -50,11 +52,11 @@ public class Master {
                     reactionHistory, networkNeighbors, parameters);
 
             // Printing to File
-            simulation.printnetworkStateMinimal(exp, ic.state, reactionHistory);
-            simulation.printReactionHistory(exp, reactionHistory);
+//            simulation.printNetworkStateMinimal(exp, ic.state, reactionHistory);
+//            simulation.printReactionHistory(exp, reactionHistory);
         }
 
-        simulation.closeOutputFiles();
+        PrintOutput.closeOutputFiles();
 
     }
 }
