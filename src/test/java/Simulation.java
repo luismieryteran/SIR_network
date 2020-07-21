@@ -58,8 +58,6 @@ class Simulation {
 
     private Double recoveryTime(Double rate) {
         return Math.log(1 - random.nextDouble()) / ( - rate );
-
-//        return infectiousPeriodDistribution.sample();
     }
 
     private void assignRecoveryTimeToInfectedNode(Integer node, NetworkState networkState, Parameters parameters){
@@ -141,23 +139,23 @@ class Simulation {
             Integer targetNode = reactionsToCome.firstEntry().getValue().reactionNodes.get(1);
             reactionsToCome.remove(reactionTime);
 
-            // Ensuring that target node is still susceptible
-            if ( newState.get(targetNode) == Compartments.S ){
-                newState.put(targetNode, Compartments.I);
 
-                // Updating state
-                networkState.setTime(reactionTime);
-                networkState.setState(newState);
+            // Target node is still susceptible by construction of reactionsToCome table
+            newState.put(targetNode, Compartments.I);
 
-                // Updating reaction history
-                reactionHistory.put(reactionTime,
-                        new ReactionSpecification(ReactionType.Infection, Arrays.asList(sourceNode, targetNode)));
+            // Updating state
+            networkState.setTime(reactionTime);
+            networkState.setState(newState);
 
-                // Assigning recovery and transmission times for newly infected node
-                assignRecoveryTimeToInfectedNode(targetNode, networkState, parameters);
-                assignTransmissionTimesToSourceNode(targetNode, networkState, networkNeighbors, parameters);
+            // Updating reaction history
+            reactionHistory.put(reactionTime,
+                    new ReactionSpecification(ReactionType.Infection, Arrays.asList(sourceNode, targetNode)));
 
-            }
+            // Assigning recovery and transmission times for newly infected node
+            assignRecoveryTimeToInfectedNode(targetNode, networkState, parameters);
+            assignTransmissionTimesToSourceNode(targetNode, networkState, networkNeighbors, parameters);
+
+
 
         } else if ( reactionsToCome.firstEntry().getValue().reactionType == ReactionType.Recovery ) {
             Integer recoveringNode = reactionsToCome.firstEntry().getValue().reactionNodes.get(0);
@@ -173,8 +171,6 @@ class Simulation {
             reactionHistory.put(reactionTime,
                     new ReactionSpecification(ReactionType.Recovery, Arrays.asList(recoveringNode)));
         }
-
-
     }
 
     void reactionStepping(Integer experiment, NetworkState networkState,
@@ -206,186 +202,4 @@ class Simulation {
         printOutput.printReactionHistory(experiment, reactionHistory);
 
     }
-
-
-//    private FileWriter writerSummarizedNetworkState;
-//    private FileWriter writerNetworkState;
-//    private FileWriter writerNetworkStateMinimal;
-//    private FileWriter writerReactionHistory;
-//    void openOutputFiles(String outputPath, Integer networkSize) {
-//        try {
-//            //------------- Summarized Dynamic State
-//            writerSummarizedNetworkState =
-//                    new FileWriter(outputPath + "summarizedDynamicState.csv");
-//
-//            // File headers
-//            writerSummarizedNetworkState.append("iter, t, ");
-//            for (Compartments compartments : Compartments.values()) {
-//                writerSummarizedNetworkState.append(String.valueOf(compartments));
-//
-//                if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-//                    writerSummarizedNetworkState.append("\n");
-//                } else {
-//                    writerSummarizedNetworkState.append(", ");
-//                }
-//            }
-//
-//            //------------- Detailed Dynamic State
-//            writerNetworkState =
-//                    new FileWriter(outputPath + "dynamicState.csv");
-//
-//            // File headers
-//            writerNetworkState.append("iter, t, ");
-//            for (Integer node = 1; node <= networkSize; node++) {
-//                writerNetworkState.append(node.toString());
-//
-//                if ( node.equals(networkSize) ) {
-//                    writerNetworkState.append("\n");
-//                } else {
-//                    writerNetworkState.append(", ");
-//                }
-//            }
-//
-//            //------------- Detailed Dynamic State Minimal
-//            writerNetworkStateMinimal =
-//                    new FileWriter(outputPath + "dynamicStateMinimal.csv");
-//
-//            // File headers
-//            writerNetworkStateMinimal.append("iter, t, node, compartment\n");
-//
-//            //------------- Reaction History
-//            writerReactionHistory =
-//                    new FileWriter(outputPath + "reactionHistory.csv");
-//            // File header
-//            writerReactionHistory.append("iter, t, ReactionType, ReactionNodes\n");
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    void closeOutputFiles(){
-//        try {
-//            writerSummarizedNetworkState.close();
-//            writerNetworkState.close();
-//            writerNetworkStateMinimal.close();
-//            writerReactionHistory.close();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private void printNetworkState(Integer experiment, NetworkState networkState){
-//        // Output file
-//        try  {
-//            // Writing to file
-//            writerNetworkState.append(experiment.toString());
-//            writerNetworkState.append(", ");
-//            writerNetworkState.append(String.valueOf(networkState.getTime()));
-//            writerNetworkState.append(", ");
-//
-//            for (Iterator<Integer> it = networkState.getState().keySet().iterator(); it.hasNext(); ) {
-//                writerNetworkState.append(String.valueOf(networkState.getState().get(it.next())));
-//
-//                if ( it.hasNext() ) {
-//                    writerNetworkState.append(", ");
-//                } else {
-//                    writerNetworkState.append("\n");
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-
-//    private void printSummarizedNetworkState(Integer experiment,
-//                                             Pair<Double, Map<Compartments, Integer>> summarizedNetworkState) {
-//
-//        // Counting number of nodes in each compartment
-////        Map<Compartments, Long> numbersByCompartment = numberOfNodesByCompartment(networkState);
-////        Arrays.stream(Compartments.values())
-////                .forEach(c -> numbersByCompartment.putIfAbsent(c, (long) 0));
-//
-//        // Output file
-//        try {
-//            // Writing to file
-//            writerSummarizedNetworkState.append(experiment.toString());
-//            writerSummarizedNetworkState.append(", ");
-//            writerSummarizedNetworkState.append(String.valueOf(summarizedNetworkState.getKey()));
-//            writerSummarizedNetworkState.append(", ");
-//
-//            for ( Compartments compartments : Compartments.values() ){
-//                    writerSummarizedNetworkState.append(String.valueOf(summarizedNetworkState.getValue().get(compartments)));
-//
-//                    if ( compartments == Compartments.values()[Compartments.values().length-1] ) {
-//                        writerSummarizedNetworkState.append("\n");
-//                    } else {
-//                        writerSummarizedNetworkState.append(", ");
-//                    }
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    void printNetworkStateMinimal(Integer experiment,
-//                                  NavigableMap<Integer, Compartments> initialState,
-//                                  NavigableMap<Double, ReactionSpecification> reactionHistory){
-//        // Output file
-//        try {
-//            // Initial state
-//            for (Map.Entry<Integer, Compartments> nodeState : initialState.entrySet()) {
-//                writerNetworkStateMinimal.append(experiment.toString());
-//                writerNetworkStateMinimal.append(", ");
-//                writerNetworkStateMinimal.append(simulationStartTime.toString());
-//                writerNetworkStateMinimal.append(", ");
-//                writerNetworkStateMinimal.append(nodeState.getKey().toString());
-//                writerNetworkStateMinimal.append(", ");
-//                writerNetworkStateMinimal.append(nodeState.getValue().toString());
-//                writerNetworkStateMinimal.append("\n");
-//            }
-//
-//            // Writing to file
-//            for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
-//                writerNetworkStateMinimal.append(experiment.toString());
-//                writerNetworkStateMinimal.append(", ");
-//                writerNetworkStateMinimal.append(entry.getKey().toString());
-//                writerNetworkStateMinimal.append(", ");
-//                if (entry.getValue().reactionType == ReactionType.Infection) {
-//                    writerNetworkStateMinimal.append(entry.getValue().reactionNodes.get(1).toString());
-//                    writerNetworkStateMinimal.append(", ");
-//                    writerNetworkStateMinimal.append(Compartments.I.toString());
-//                } else if (entry.getValue().reactionType == ReactionType.Recovery) {
-//                    writerNetworkStateMinimal.append(entry.getValue().reactionNodes.get(0).toString());
-//                    writerNetworkStateMinimal.append(", ");
-//                    writerNetworkStateMinimal.append(Compartments.R.toString());
-//                }
-//                writerNetworkStateMinimal.append("\n");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    void printReactionHistory(Integer experiment, Map<Double, ReactionSpecification> reactionHistory){
-//        // Output file
-//        try {
-//            // Writing to file
-//            for (Map.Entry<Double, ReactionSpecification> entry : reactionHistory.entrySet()) {
-//                writerReactionHistory.append(experiment.toString());
-//                writerReactionHistory.append(", ");
-//                writerReactionHistory.append(entry.getKey().toString());
-//                writerReactionHistory.append(", ");
-//                writerReactionHistory.append(entry.getValue().reactionType.toString());
-//                writerReactionHistory.append(", ");
-//                writerReactionHistory.append(entry.getValue().reactionNodes.toString().replace(",", ""));
-//                writerReactionHistory.append("\n");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

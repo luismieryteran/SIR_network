@@ -1,5 +1,5 @@
 class Parameters {
-    Integer N = 1000;                       // Population
+    Integer N = 50;                       // Population
     Double p = 1.0;
 //    Double p = 5.0 * 1 / (N - 1);      // Prob of link between 2 given nodes in Erdös-Renyi network
                                             // mean nbr of connections: (N-1) * p

@@ -1,2 +1,10 @@
 
 src/test/output/dynamicState.csv
+
+src/test/output/dynamicStateMinimal.csv
+
+src/test/output/network.csv
+
+src/test/output/reactionHistory.csv
+
+src/test/output/summarizedDynamicState.csv
